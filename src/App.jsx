@@ -725,7 +725,7 @@ function Contact() {
 
     try {
       const res = await fetch(
-        "https://api.performancebuilding.co.nz/contact-api",
+        "https://api.performancebuilding.co.nz/api/contact",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
