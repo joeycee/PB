@@ -710,12 +710,46 @@ function Contact() {
   const [status, setStatus] = useState({ type: "idle", msg: "" });
   const shouldReduceMotion = useReducedMotion();
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
-    setStatus({
-      type: "ok",
-      msg: "Thanks — enquiry captured. Next we’ll connect this to email (EmailJS/Formspree) or an API.",
-    });
+    setStatus({ type: "sending", msg: "Sending…" });
+
+    const form = e.currentTarget;
+
+    const payload = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      service: form.service.value,
+      details: form.details.value.trim(),
+    };
+
+    try {
+      const res = await fetch(
+        "https://api.performancebuilding.co.nz/contact-api",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Request failed");
+      }
+
+      form.reset();
+      setStatus({
+        type: "ok",
+        msg: "Thanks — your enquiry has been sent. We’ll be in touch shortly.",
+      });
+    } catch (err) {
+      setStatus({
+        type: "error",
+        msg: "Something went wrong. Please try again or email us directly.",
+      });
+    }
   }
 
   const container = {
@@ -729,10 +763,10 @@ function Contact() {
 
   const item = {
     hidden: shouldReduceMotion
-      ? { opacity: 1, y: 0, filter: "blur(0px)" }
+      ? { opacity: 1, y: 0 }
       : { opacity: 0, y: 18, filter: "blur(8px)" },
     show: shouldReduceMotion
-      ? { opacity: 1, y: 0, filter: "blur(0px)" }
+      ? { opacity: 1, y: 0 }
       : {
           opacity: 1,
           y: 0,
@@ -745,23 +779,18 @@ function Contact() {
     hidden: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 },
     show: shouldReduceMotion
       ? { opacity: 1, y: 0 }
-      : { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+      : { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
   return (
     <section id="contact" className="relative overflow-hidden border-t border-zinc-800">
-      {/* Background image */}
+      {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/floor-image.jpg')" }}
       />
-
-      {/* Dark tint overlay (tune opacity here) */}
       <div className="absolute inset-0 bg-black/70" />
-
-      {/* Premium gradient + vignette */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/60 to-black/75" />
-      <div className="absolute inset-0 [background:radial-gradient(80%_60%_at_50%_35%,rgba(255,255,255,0.10),rgba(0,0,0,0)_60%)]" />
 
       <Container className="relative z-10 py-14 sm:py-20">
         <motion.div
@@ -773,49 +802,22 @@ function Contact() {
         >
           {/* Left column */}
           <motion.div className="lg:col-span-5" variants={item}>
-            <div className="mb-3">
-              <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur">
-                Contact
-              </span>
-            </div>
+            <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+              Contact
+            </span>
 
-            <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               Let’s talk about your project.
             </h2>
 
-            <p className="mt-3 text-base leading-relaxed text-zinc-200">
-              Send a few details and we’ll suggest the right service, timeline, and next steps.
+            <p className="mt-3 text-zinc-200">
+              Send a few details and we’ll suggest the right service and next steps.
             </p>
-
-            <div className="mt-6 space-y-2 text-sm text-zinc-200">
-              <div>
-                <span className="font-semibold text-white">Email:</span>{" "}
-                <a className="underline hover:text-white" href={`mailto:${BRAND.email}`}>
-                  {BRAND.email}
-                </a>
-              </div>
-              <div>
-                <span className="font-semibold text-white">Phone:</span>{" "}
-                <a className="underline hover:text-white" href={`tel:${BRAND.phone}`}>
-                  {BRAND.phone}
-                </a>
-              </div>
-              <div>
-                <span className="font-semibold text-white">Location:</span> {BRAND.location}
-              </div>
-            </div>
-
-            <div className="mt-8 rounded-2xl border border-white/15 bg-white/10 p-5 text-sm text-zinc-200 backdrop-blur">
-              Prefer a quick call? Hit “Book a call” and we’ll reply with a couple of times.
-            </div>
           </motion.div>
 
-          {/* Right column (form) */}
+          {/* Form */}
           <motion.div className="lg:col-span-7" variants={item}>
-            <div className="rounded-2xl border border-white/15 bg-white/10 p-6 shadow-lg backdrop-blur-md">
-              {/* subtle top highlight */}
-              <div className="pointer-events-none -mx-6 -mt-6 mb-6 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
-
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-6 backdrop-blur-md">
               <motion.form
                 onSubmit={onSubmit}
                 className="grid gap-4 sm:grid-cols-2"
@@ -824,25 +826,28 @@ function Contact() {
                 <motion.div variants={fieldItem}>
                   <label className="text-sm font-medium text-white">Name</label>
                   <input
+                    name="name"
                     required
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-white/25"
-                    placeholder="Your name"
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
                   />
                 </motion.div>
 
                 <motion.div variants={fieldItem}>
                   <label className="text-sm font-medium text-white">Email</label>
                   <input
-                    required
+                    name="email"
                     type="email"
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-white/25"
-                    placeholder="you@email.com"
+                    required
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
                   />
                 </motion.div>
 
                 <motion.div className="sm:col-span-2" variants={fieldItem}>
                   <label className="text-sm font-medium text-white">Service needed</label>
-                  <select className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-white/25">
+                  <select
+                    name="service"
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
+                  >
                     <option>Energy Modelling</option>
                     <option>Passive Consultancy</option>
                     <option>H1 Consulting</option>
@@ -856,27 +861,31 @@ function Contact() {
                 <motion.div className="sm:col-span-2" variants={fieldItem}>
                   <label className="text-sm font-medium text-white">Project details</label>
                   <textarea
-                    required
+                    name="details"
                     rows={5}
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-white/25"
-                    placeholder="Location, stage (concept/detailed design/build), floor area, timeline, and what you’re trying to achieve."
+                    required
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
                   />
                 </motion.div>
 
-                <motion.div
-                  className="sm:col-span-2 flex flex-wrap items-center gap-3 pt-2"
-                  variants={fieldItem}
-                >
+                <motion.div className="sm:col-span-2 flex items-center gap-3" variants={fieldItem}>
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-white/40"
+                    disabled={status.type === "sending"}
+                    className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-900"
                   >
-                    Send enquiry
+                    {status.type === "sending" ? "Sending…" : "Send enquiry"}
                   </button>
 
-                  {status.type === "ok" ? (
-                    <span className="text-sm text-zinc-200">{status.msg}</span>
-                  ) : null}
+                  {status.msg && (
+                    <span
+                      className={`text-sm ${
+                        status.type === "error" ? "text-red-300" : "text-zinc-200"
+                      }`}
+                    >
+                      {status.msg}
+                    </span>
+                  )}
                 </motion.div>
               </motion.form>
             </div>
@@ -886,6 +895,7 @@ function Contact() {
     </section>
   );
 }
+
 
 function Footer() {
   return (
