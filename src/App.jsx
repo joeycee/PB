@@ -3,10 +3,10 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 
 
 const BRAND = {
-  name: "Performance Building",
+  name: "Performance Building Consultants",
   tagline:
     "Energy modelling, airtightness testing, and building-physics consulting for better homes in Wānaka.",
-  location: "Wānaka, New Zealand",
+  location: "New Zealand",
   email: "Rowan@performancebuilding.co.nz",
   phone: "+64 223493940",
 };
@@ -268,7 +268,7 @@ function Hero() {
           animate="show"
         >
           {/* Badges */}
-          <motion.div className="mb-4 flex flex-wrap gap-2" variants={container}>
+          {/* <motion.div className="mb-4 flex flex-wrap gap-2" variants={container}>
             <motion.div variants={badgeItem}>
               <Badge>Energy Modelling</Badge>
             </motion.div>
@@ -278,7 +278,7 @@ function Hero() {
             <motion.div variants={badgeItem}>
               <Badge>Airtightness Testing</Badge>
             </motion.div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Heading */}
           <motion.h1
@@ -294,7 +294,7 @@ function Hero() {
             variants={item}
           >
             Energy modelling, airtightness testing, and building-physics consulting for
-            high-quality homes in Wānaka and across New Zealand.
+            high-quality homes across New Zealand.
           </motion.p>
 
           {/* Buttons */}
@@ -304,7 +304,7 @@ function Hero() {
           </motion.div>
 
           {/* Trust strip */}
-          <motion.div
+          {/* <motion.div
             className="mt-10 grid gap-3 sm:grid-cols-3"
             variants={container}
           >
@@ -326,7 +326,7 @@ function Hero() {
                 <div className="mt-1 text-sm text-zinc-200">Clean reporting.</div>
               </div>
             </motion.div>
-          </motion.div>
+          </motion.div> */}
         </motion.div>
       </Container>
     </section>
@@ -341,28 +341,24 @@ function Services() {
   const services = useMemo(
     () => [
       {
-        title: "Energy Modelling",
-        desc: "Thermal performance modelling to support design decisions, reduce running costs, and improve comfort.",
+        title: "Energy modelling",
+        desc: "Thermal performance modelling to inform design decisions, reduce running costs, improve comfort, and minimise overheating risk.",
       },
       {
-        title: "Passive Consultancy",
-        desc: "Guidance on airtightness, insulation continuity, glazing strategy, ventilation, and thermal bridging.",
+        title: "Passive house",
+        desc: "Expert guidance supporting Passive House and EnerPHit certification, applying proven principles to projects of any scale.",
       },
       {
-        title: "H1 Consulting",
-        desc: "Support with NZ Building Code H1 compliance pathway selection and documentation.",
+        title: "H1",
+        desc: "Support with NZ Building Code H1 compliance, modelling and documentation to meet project requirements.",
       },
       {
-        title: "Blower Door Airtightness Testing",
-        desc: "On-site testing, reporting, and practical leakage insights to help you hit airtightness targets.",
+        title: "Airtightness Testing",
+        desc: "On-site testing, reporting, and practical leakage insights to help you hit airtightness targets. ATTMA TSL1 and TSL2 certified.",
       },
       {
-        title: "Homestar Certifications",
-        desc: "Evidence and documentation support to align your project with Homestar requirements and best practice.",
-      },
-      {
-        title: "WUFI Hygrothermal Analysis",
-        desc: "Moisture and durability analysis for wall/roof build-ups to reduce condensation and mould risk.",
+        title: "Homestar",
+        desc: "Practical guidance to achieve Homestar certification from design through to build.",
       },
     ],
     []
@@ -396,7 +392,6 @@ function Services() {
       id="services"
       className="relative overflow-hidden border-t border-zinc-800 bg-zinc-900"
     >
-      
       {/* Depth overlays */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
       <div className="pointer-events-none absolute inset-0 [background:radial-gradient(80%_70%_at_50%_30%,rgba(255,255,255,0.08),rgba(0,0,0,0)_60%)]" />
@@ -428,19 +423,25 @@ function Services() {
 
         {/* Cards (stagger on scroll) */}
         <motion.div
-          className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-10 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.25 }}
         >
           {services.map((s) => (
-            <motion.div key={s.title} variants={item}>
-              <div className="group rounded-2xl border border-white/12 bg-white/5 p-6 shadow-sm backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/7 hover:shadow-lg">
+            <motion.div key={s.title} variants={item} className="h-full">
+              <div className="group flex h-full flex-col rounded-2xl border border-white/12 bg-white/5 p-6 shadow-sm backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/7 hover:shadow-lg">
                 <h3 className="text-base font-semibold text-white">{s.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">{s.desc}</p>
 
-                <div className="mt-6 h-px w-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 transition group-hover:opacity-100" />
+                <p className="mt-3 text-sm leading-relaxed text-zinc-300">
+                  {s.desc}
+                </p>
+
+                {/* pushes the divider to the bottom so cards feel consistent */}
+                <div className="mt-auto pt-6">
+                  <div className="h-px w-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 transition group-hover:opacity-100" />
+                </div>
               </div>
             </motion.div>
           ))}
@@ -449,6 +450,7 @@ function Services() {
     </section>
   );
 }
+
 
 
 
@@ -629,20 +631,12 @@ function About() {
               Building physics, delivered practically.
             </h2>
 
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-zinc-300">
-              Add your friend’s credentials, tools, and experience here. Keep it short and credible.
-            </p>
 
             <div className="mt-6 space-y-4 text-sm leading-relaxed text-zinc-400">
               <p>
-                Based in {BRAND.location}, supporting projects from early design through testing and
-                documentation. Ideal for architects, designers, builders, and homeowners who want
-                comfort and performance without overcomplication.
+                Based in {BRAND.location},  we support projects from early design through construction. Ideal for architects, designers, builders, and homeowners who want to ensure comfort and performance at the design stage without overcomplication. 
               </p>
-              <p>
-                Add specifics: certifications, relevant experience, and the kind of projects
-                typically supported.
-              </p>
+              
             </div>
           </motion.div>
 
@@ -672,10 +666,10 @@ function About() {
                   viewport={{ once: true, amount: 0.4 }}
                 >
                   {[
-                    "Clear written outputs you can forward to stakeholders",
-                    "Practical recommendations that can actually be built",
-                    "Reduced risk around moisture, comfort, and compliance",
-                    "A consistent process across projects",
+                    "Early insight into energy use, overheating, and winter comfort—so the design can be optimised before construction",
+                    "Practical solutions that work on site",
+                    "Lower risk around moisture, comfort, and compliance",
+                    "A proven, consistent process",
                   ].map((text) => (
                     <motion.li key={text} className="flex gap-3" variants={listItem}>
                       <span className="mt-1 h-2 w-2 rounded-full bg-white" />
@@ -689,10 +683,10 @@ function About() {
                     Service area
                   </div>
                   <div className="mt-1 text-sm font-semibold text-white">
-                    Central Otago + Remote NZ
+                    New Zealand Wide
                   </div>
                   <div className="mt-1 text-sm text-zinc-400">
-                    Wānaka • Queenstown • Cromwell • Online
+                    Wānaka • Queenstown • Christchurch • Wellington • Auckland
                   </div>
                 </div>
               </div>
@@ -716,27 +710,56 @@ function Contact() {
 
     const form = e.currentTarget;
 
-    const payload = {
-      name: form.name.value.trim(),
-      email: form.email.value.trim(),
-      service: form.service.value,
-      details: form.details.value.trim(),
+    // Safe getter so missing inputs don't crash submit
+    const get = (name) => {
+      const el = form.elements?.namedItem?.(name);
+      // namedItem can return RadioNodeList; handle both cases
+      // @ts-ignore
+      return (el?.value ?? "").toString();
     };
 
-    try {
-      const res = await fetch(
-        "https://api.performancebuilding.co.nz/api/contact",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+    const payload = {
+      name: get("name").trim(),
+      email: get("email").trim(),
+      phone: get("phone").trim(),
+      service: get("service").trim(),
+      details: get("details").trim(),
+      source: "website",
+    };
 
-      const data = await res.json().catch(() => ({}));
+    // Frontend validation: avoid hitting API with empty required fields
+    if (!payload.name || !payload.email || !payload.phone || !payload.service || !payload.details) {
+      setStatus({ type: "error", msg: "Please fill out all fields." });
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Read raw first (works even if server returns HTML on error)
+      const raw = await res.text();
+      let data = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        data = {};
+      }
 
       if (!res.ok) {
-        throw new Error(data?.error || "Request failed");
+        const msg =
+          // Prefer backend JSON error
+          (data && data.error) ||
+          // Otherwise show raw text if any
+          (raw && raw.slice(0, 160)) ||
+          `Request failed (${res.status})`;
+        throw new Error(msg);
       }
 
       form.reset();
@@ -747,7 +770,7 @@ function Contact() {
     } catch (err) {
       setStatus({
         type: "error",
-        msg: "Something went wrong. Please try again or email us directly.",
+        msg: err?.message || "Something went wrong. Please try again or email us directly.",
       });
     }
   }
@@ -811,8 +834,18 @@ function Contact() {
             </h2>
 
             <p className="mt-3 text-zinc-200">
-              Send a few details and we’ll suggest the right service and next steps.
+              Send a few details and we’ll come back with the right service pathway,
+              likely scope, and next steps.
             </p>
+
+            <div className="mt-6 space-y-2 text-sm text-zinc-200">
+              <p className="opacity-90">Prefer email?</p>
+              <p className="text-white/90">
+                <span className="font-medium text-white">
+                  hello@performancebuilding.co.nz
+                </span>
+              </p>
+            </div>
           </motion.div>
 
           {/* Form */}
@@ -828,7 +861,9 @@ function Contact() {
                   <input
                     name="name"
                     required
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
+                    autoComplete="name"
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-white/30"
+                    placeholder="Your name"
                   />
                 </motion.div>
 
@@ -838,22 +873,37 @@ function Contact() {
                     name="email"
                     type="email"
                     required
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
+                    autoComplete="email"
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-white/30"
+                    placeholder="you@example.com"
                   />
                 </motion.div>
 
-                <motion.div className="sm:col-span-2" variants={fieldItem}>
+                <motion.div variants={fieldItem}>
+                  <label className="text-sm font-medium text-white">Phone</label>
+                  <input
+                    name="phone"
+                    type="tel"
+                    required
+                    autoComplete="tel"
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-white/30"
+                    placeholder="e.g. 021 123 4567"
+                  />
+                </motion.div>
+
+                <motion.div variants={fieldItem}>
                   <label className="text-sm font-medium text-white">Service needed</label>
                   <select
                     name="service"
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
+                    required
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none focus:border-white/30"
+                    defaultValue="Energy modelling"
                   >
-                    <option>Energy Modelling</option>
-                    <option>Passive Consultancy</option>
-                    <option>H1 Consulting</option>
-                    <option>Blower Door Airtightness Testing</option>
-                    <option>Homestar Certifications</option>
-                    <option>WUFI Hygrothermal Analysis</option>
+                    <option>Energy modelling</option>
+                    <option>Passive house</option>
+                    <option>H1</option>
+                    <option>Airtightness Testing</option>
+                    <option>Homestar</option>
                     <option>Not sure — help me choose</option>
                   </select>
                 </motion.div>
@@ -864,15 +914,19 @@ function Contact() {
                     name="details"
                     rows={5}
                     required
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white"
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-white/30"
+                    placeholder="Tell us what you’re building, where it is, and what stage you’re at…"
                   />
                 </motion.div>
 
-                <motion.div className="sm:col-span-2 flex items-center gap-3" variants={fieldItem}>
+                <motion.div
+                  className="sm:col-span-2 flex flex-wrap items-center gap-3"
+                  variants={fieldItem}
+                >
                   <button
                     type="submit"
                     disabled={status.type === "sending"}
-                    className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-900"
+                    className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-zinc-900 disabled:opacity-60"
                   >
                     {status.type === "sending" ? "Sending…" : "Send enquiry"}
                   </button>
@@ -880,7 +934,11 @@ function Contact() {
                   {status.msg && (
                     <span
                       className={`text-sm ${
-                        status.type === "error" ? "text-red-300" : "text-zinc-200"
+                        status.type === "error"
+                          ? "text-red-300"
+                          : status.type === "ok"
+                          ? "text-emerald-200"
+                          : "text-zinc-200"
                       }`}
                     >
                       {status.msg}
@@ -895,6 +953,8 @@ function Contact() {
     </section>
   );
 }
+
+
 
 
 function Footer() {
