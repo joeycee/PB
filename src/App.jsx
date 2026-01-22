@@ -2,6 +2,11 @@ import { useMemo, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 
+const API_BASE = import.meta.env.PROD
+  ? "https://api.performancebuilding.co.nz"
+  : "";
+
+
 const BRAND = {
   name: "Performance Building Consultants",
   tagline:
@@ -706,60 +711,72 @@ function Contact() {
 
   async function onSubmit(e) {
     e.preventDefault();
+
+    // Prevent double submit
+    if (status.type === "sending") return;
+
     setStatus({ type: "sending", msg: "Sending…" });
 
     const form = e.currentTarget;
 
-    // Safe getter so missing inputs don't crash submit
+    // Safe getter (won’t crash if an input is missing)
     const get = (name) => {
       const el = form.elements?.namedItem?.(name);
-      // namedItem can return RadioNodeList; handle both cases
-      // @ts-ignore
-      return (el?.value ?? "").toString();
+      return (el?.value ?? "").toString().trim();
     };
 
     const payload = {
-      name: get("name").trim(),
-      email: get("email").trim(),
-      phone: get("phone").trim(),
-      service: get("service").trim(),
-      details: get("details").trim(),
+      name: get("name"),
+      email: get("email"),
+      phone: get("phone"),
+      service: get("service"),
+      details: get("details"),
       source: "website",
     };
 
-    // Frontend validation: avoid hitting API with empty required fields
-    if (!payload.name || !payload.email || !payload.phone || !payload.service || !payload.details) {
+    // Frontend validation
+    if (
+      !payload.name ||
+      !payload.email ||
+      !payload.phone ||
+      !payload.service ||
+      !payload.details
+    ) {
       setStatus({ type: "error", msg: "Please fill out all fields." });
       return;
     }
 
+    // Abort if request hangs (bad networks, mobile, etc.)
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(`${API_BASE}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
 
-      // Read raw first (works even if server returns HTML on error)
       const raw = await res.text();
+      clearTimeout(timeout);
+
       let data = {};
       try {
         data = raw ? JSON.parse(raw) : {};
       } catch {
-        data = {};
+        // non-JSON (nginx / proxy / html error)
       }
 
       if (!res.ok) {
-        const msg =
-          // Prefer backend JSON error
-          (data && data.error) ||
-          // Otherwise show raw text if any
-          (raw && raw.slice(0, 160)) ||
-          `Request failed (${res.status})`;
-        throw new Error(msg);
+        throw new Error(
+          data?.error ||
+          raw?.slice(0, 160) ||
+          `Request failed (${res.status})`
+        );
       }
 
       form.reset();
@@ -768,12 +785,17 @@ function Contact() {
         msg: "Thanks — your enquiry has been sent. We’ll be in touch shortly.",
       });
     } catch (err) {
+      clearTimeout(timeout);
       setStatus({
         type: "error",
-        msg: err?.message || "Something went wrong. Please try again or email us directly.",
+        msg:
+          err?.name === "AbortError"
+            ? "Request timed out. Please try again."
+            : err?.message || "Something went wrong. Please try again later.",
       });
     }
   }
+
 
   const container = {
     hidden: {},
