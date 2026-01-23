@@ -711,15 +711,12 @@ function Contact() {
 
   async function onSubmit(e) {
     e.preventDefault();
-
-    // Prevent double submit
     if (status.type === "sending") return;
 
     setStatus({ type: "sending", msg: "Sending…" });
 
     const form = e.currentTarget;
 
-    // Safe getter (won’t crash if an input is missing)
     const get = (name) => {
       const el = form.elements?.namedItem?.(name);
       return (el?.value ?? "").toString().trim();
@@ -734,24 +731,20 @@ function Contact() {
       source: "website",
     };
 
-    // Frontend validation
-    if (
-      !payload.name ||
-      !payload.email ||
-      !payload.phone ||
-      !payload.service ||
-      !payload.details
-    ) {
+    if (!payload.name || !payload.email || !payload.phone || !payload.service || !payload.details) {
       setStatus({ type: "error", msg: "Please fill out all fields." });
       return;
     }
 
-    // Abort if request hangs (bad networks, mobile, etc.)
+    const url = import.meta.env.DEV
+      ? "/api/contact"
+      : "https://api.performancebuilding.co.nz/api/contact";
+
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10_000);
+    const timeout = setTimeout(() => controller.abort(), 20000); // 20s (safer)
 
     try {
-      const res = await fetch(`${API_BASE}/api/contact`, {
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -762,30 +755,16 @@ function Contact() {
       });
 
       const raw = await res.text();
-      clearTimeout(timeout);
-
       let data = {};
-      try {
-        data = raw ? JSON.parse(raw) : {};
-      } catch {
-        // non-JSON (nginx / proxy / html error)
-      }
+      try { data = raw ? JSON.parse(raw) : {}; } catch {}
 
       if (!res.ok) {
-        throw new Error(
-          data?.error ||
-          raw?.slice(0, 160) ||
-          `Request failed (${res.status})`
-        );
+        throw new Error(data?.error || raw?.slice(0, 200) || `Request failed (${res.status})`);
       }
 
       form.reset();
-      setStatus({
-        type: "ok",
-        msg: "Thanks — your enquiry has been sent. We’ll be in touch shortly.",
-      });
+      setStatus({ type: "ok", msg: "Thanks — your enquiry has been sent. We’ll be in touch shortly." });
     } catch (err) {
-      clearTimeout(timeout);
       setStatus({
         type: "error",
         msg:
@@ -793,8 +772,11 @@ function Contact() {
             ? "Request timed out. Please try again."
             : err?.message || "Something went wrong. Please try again later.",
       });
+    } finally {
+      clearTimeout(timeout);
     }
   }
+
 
 
   const container = {
